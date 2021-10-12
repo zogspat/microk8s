@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: wp-root-pv
+  labels:
+    volFor: web-content
+spec:
+  capacity:
+    storage: 20Gi
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    path: /home/donal/samba/wp
+    server: 192.168.0.36
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: httpd-conf-pv
+  labels:
+    volFor: http-conf
+spec:
+  capacity:
+    storage: 5Mi
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    path: /home/donal/samba/httpd-conf
+    server: 192.168.0.36
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: php-conf-pv
+  labels:
+    volFor: php-conf
+spec:
+  capacity:
+    storage: 5Mi
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    path: /home/donal/samba/php-conf
+    server: 192.168.0.36
