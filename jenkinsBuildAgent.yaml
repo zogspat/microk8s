@@ -1,0 +1,35 @@
+FROM ubuntu:18.04
+
+# This is a modified version of https://github.com/bibinwilson/jenkins-docker-slave/blob/master/Dockerfile
+
+# Make sure the package repository is up to date.
+RUN apt-get update
+RUN apt-get -qy full-upgrade
+RUN  apt-get install -qy git
+# Install a basic SSH server
+RUN apt-get install -qy openssh-server
+RUN sed -i 's|session    required     pam_loginuid.so|session    optional     pam_loginuid.so|g' /etc/pam.d/sshd
+RUN mkdir -p /var/run/sshd
+RUN apt-get install -qy openjdk-8-jdk
+# Install maven
+RUN apt-get install -qy maven
+# Cleanup old packages
+RUN apt-get -qy autoremove
+# Add user jenkins to the image
+RUN useradd -ms /bin/bash jenkins
+# Set password for the jenkins user (you may want to alter this).
+RUN echo 'jenkins:jenkins' | chpasswd
+RUN mkdir /home/jenkins/.m2
+RUN mkdir /home/jenkins/.ssh
+
+RUN chown -R jenkins:jenkins /home/jenkins/.m2/
+RUN chown -R jenkins:jenkins /home/jenkins/.ssh/
+
+# from this: https://github.com/docker/cli/issues/2281
+# ... by way of: https://stackoverflow.com/questions/50042753/how-to-build-docker-images-using-a-declarative-jenkinsfile
+COPY --from=docker /usr/local/bin/docker /usr/local/bin
+
+# Standard SSH port
+EXPOSE 22
+
+CMD ["/usr/sbin/sshd", "-D"]
